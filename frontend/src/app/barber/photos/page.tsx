@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Camera, Trash2, Plus } from 'lucide-react';
+import { Camera, Trash2, Plus, ImageIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const mockPhotos = [
@@ -27,39 +27,52 @@ export default function BarberPhotosPage() {
     const remove = (id: number) => setPhotos(prev => prev.filter(p => p.id !== id));
 
     return (
-        <div className="space-y-8 animate-fade-in">
-            <div className="flex items-center justify-between">
+        <div className="space-y-8 animate-fade-in pb-10">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold text-white">Mis Fotos de Trabajo</h1>
-                    <p className="text-sm text-zinc-400 mt-1">Muestra tu portfolio a los clientes</p>
+                    <h1 className="text-3xl font-extrabold text-white tracking-tight flex items-center gap-3">
+                        <ImageIcon className="w-8 h-8 text-[#C9A84C]" />
+                        Mis Trabajos
+                    </h1>
+                    <p className="text-sm text-zinc-400 mt-1 font-medium">Sube fotos de tus mejores cortes para tu portafolio público</p>
                 </div>
             </div>
 
-            <div className="glass-panel p-4 rounded-xl border border-[#d4af37]/20 flex gap-4 items-end">
-                <div className="flex-1">
-                    <label className="text-sm font-medium text-zinc-300 block mb-1.5">Descripción del trabajo</label>
-                    <input
-                        className="w-full bg-zinc-900 border border-zinc-700 text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#d4af37]/50"
-                        placeholder="Ej. Skin fade con diseño"
-                        value={caption}
-                        onChange={e => setCaption(e.target.value)}
-                    />
+            <div className="bg-[#111111] p-6 rounded-2xl border border-white/5 flex flex-col md:flex-row gap-4 items-end shadow-sm">
+                <div className="flex-1 w-full relative">
+                    <label className="text-xs font-bold text-zinc-400 uppercase tracking-wider mb-2 block">Descripción del Título</label>
+                    <div className="relative">
+                        <Camera className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500" />
+                        <input
+                            className="w-full bg-[#0A0A0A] border border-white/5 text-white font-medium rounded-xl pl-12 pr-4 py-3.5 focus:outline-none focus:border-[#C9A84C]/50 transition-colors shadow-inner"
+                            placeholder="Ej. Skin fade con diseño en navaja..."
+                            value={caption}
+                            onChange={e => setCaption(e.target.value)}
+                        />
+                    </div>
                 </div>
-                <Button onClick={addPhoto}>
-                    <Plus className="w-4 h-4 mr-2" />
-                    Subir Foto
+                <Button onClick={addPhoto} className="w-full md:w-auto mt-4 md:mt-0 px-8">
+                    <Plus className="w-5 h-5 mr-2" />
+                    Subir al Perfil
                 </Button>
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 {photos.map(p => (
-                    <div key={p.id} className="relative group rounded-xl overflow-hidden aspect-square">
-                        <img src={p.url} alt={p.caption} className="w-full h-full object-cover" />
-                        <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-between p-3">
-                            <button onClick={() => remove(p.id)} className="self-end p-1.5 bg-red-500/80 rounded-lg text-white hover:bg-red-600 transition-colors">
+                    <div key={p.id} className="relative group rounded-2xl overflow-hidden aspect-square border border-white/5 bg-[#111111] shadow-sm">
+                        <img src={p.url} alt={p.caption} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" />
+
+                        {/* Overlay Gradient */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A] via-black/40 to-transparent opacity-60 group-hover:opacity-90 transition-opacity duration-300" />
+
+                        {/* Content */}
+                        <div className="absolute inset-0 flex flex-col justify-between p-4">
+                            <button onClick={() => remove(p.id)} className="self-end p-2 bg-rose-500/20 backdrop-blur-md rounded-xl text-rose-400 opacity-0 group-hover:opacity-100 transition-all hover:bg-rose-500 hover:text-white border border-rose-500/30">
                                 <Trash2 className="w-4 h-4" />
                             </button>
-                            <p className="text-white text-sm font-medium">{p.caption}</p>
+                            <div className="transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
+                                <p className="text-white text-sm font-bold truncate">{p.caption}</p>
+                            </div>
                         </div>
                     </div>
                 ))}

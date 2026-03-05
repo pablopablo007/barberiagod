@@ -1,39 +1,44 @@
 'use client';
 
-import { Users, DollarSign, Calendar, Scissors } from 'lucide-react';
+import { Users, DollarSign, Calendar, Scissors, ChevronRight } from 'lucide-react';
+import Link from 'next/link';
 
 const stats = [
-    { title: 'Ingresos Mensuales', value: '$45,231', icon: DollarSign, trend: '+12.5%' },
+    { title: 'Ingresos Mensuales', value: '$4,231', icon: DollarSign, trend: '+12.5%' },
     { title: 'Citas Hoy', value: '24', icon: Calendar, trend: '+4' },
     { title: 'Nuevos Clientes', value: '12', icon: Users, trend: '+2' },
-    { title: 'Servicios Populares', value: 'Corte Premium', icon: Scissors, trend: '' },
+    { title: 'Corte Estrella', value: 'Mid Fade', icon: Scissors, trend: '' },
 ];
 
 export default function DashboardHome() {
     return (
-        <div className="space-y-8 animate-fade-in">
+        <div className="space-y-8 animate-fade-in pb-10">
             <div className="flex items-center justify-between">
-                <h1 className="text-3xl font-bold text-white tracking-tight">Vistazo General</h1>
-                <p className="text-sm text-zinc-500">Última actualización: Hoy, 10:24 AM</p>
+                <div>
+                    <h1 className="text-3xl font-extrabold text-white tracking-tight">Vistazo General</h1>
+                    <p className="text-zinc-500 mt-1 font-medium">Última actualización: Hoy, 10:24 AM</p>
+                </div>
             </div>
 
+            {/* KPIs Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {stats.map((stat) => (
-                    <div key={stat.title} className="glass-panel p-6 rounded-2xl gold-border hover:bg-[#1a1a1a] transition-colors relative overflow-hidden group">
-                        <div className="absolute -right-4 -top-4 w-24 h-24 bg-[#d4af37]/10 rounded-full blur-xl group-hover:bg-[#d4af37]/20 transition-colors" />
-                        <div className="flex items-start justify-between">
+                    <div key={stat.title} className="bg-[#111111] p-6 rounded-2xl border border-white/5 hover:border-[#C9A84C]/30 transition-all relative overflow-hidden group shadow-sm">
+                        <div className="absolute -right-6 -top-6 w-24 h-24 bg-[#C9A84C]/5 rounded-full blur-2xl group-hover:bg-[#C9A84C]/10 transition-colors" />
+
+                        <div className="relative z-10 flex items-start justify-between">
                             <div>
-                                <p className="text-sm font-medium text-zinc-400 mb-1">{stat.title}</p>
-                                <h3 className="text-2xl font-bold text-white">{stat.value}</h3>
+                                <p className="text-sm font-bold text-zinc-500 mb-1">{stat.title}</p>
+                                <h3 className="text-3xl font-extrabold text-white">{stat.value}</h3>
                             </div>
-                            <div className="p-2 bg-black/50 rounded-lg border border-white/5">
-                                <stat.icon className="w-5 h-5 text-[#d4af37]" />
+                            <div className="w-12 h-12 bg-[#0A0A0A] rounded-xl border border-white/5 flex items-center justify-center">
+                                <stat.icon className="w-6 h-6 text-[#C9A84C]" />
                             </div>
                         </div>
                         {stat.trend && (
-                            <div className="mt-4 flex items-center text-sm">
-                                <span className="text-emerald-500 font-medium">{stat.trend}</span>
-                                <span className="text-zinc-500 ml-2">vs mes anterior</span>
+                            <div className="relative z-10 mt-4 pt-4 border-t border-white/5 flex items-center text-sm">
+                                <span className="text-emerald-500 font-bold bg-emerald-500/10 px-2 py-0.5 rounded text-xs">{stat.trend}</span>
+                                <span className="text-zinc-500 ml-2 font-medium text-xs">vs mes anterior</span>
                             </div>
                         )}
                     </div>
@@ -41,33 +46,53 @@ export default function DashboardHome() {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div className="lg:col-span-2 glass-panel p-6 rounded-2xl border border-white/10 h-[400px]">
-                    <h3 className="text-lg font-medium text-white mb-4">Ingresos (Demo Gráfico)</h3>
-                    <div className="w-full h-[300px] flex items-end justify-between p-4 bg-black/40 rounded-xl relative">
-                        {/* Simple CSS bar chart visualization */}
+                {/* Gráfico Demo */}
+                <div className="lg:col-span-2 bg-[#111111] p-6 rounded-2xl border border-white/5 h-[420px] shadow-sm flex flex-col">
+                    <h3 className="text-lg font-bold text-white mb-6">Ingresos de la Semana</h3>
+                    <div className="flex-1 flex items-end justify-between px-2 pb-6 relative">
+                        {/* Grid lines */}
+                        <div className="absolute inset-0 flex flex-col justify-between pointer-events-none">
+                            {[1, 2, 3, 4].map(i => <div key={i} className="w-full border-b border-white/5" />)}
+                        </div>
+
+                        {/* Bars */}
                         {[40, 70, 45, 90, 65, 80, 100].map((h, i) => (
-                            <div key={i} className="w-[10%] bg-gradient-to-t from-[#d4af37]/20 to-[#d4af37] rounded-t-sm" style={{ height: `${h}%` }} />
+                            <div key={i} className="w-[8%] group relative z-10 flex flex-col items-center justify-end h-full">
+                                <div className="w-full bg-gradient-to-t from-[#C9A84C]/20 to-[#C9A84C] rounded-t-md transition-all hover:opacity-80" style={{ height: `${h}%` }} />
+                                <span className="absolute -bottom-6 text-xs font-bold text-zinc-500">
+                                    {['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'][i]}
+                                </span>
+                            </div>
                         ))}
-                        <div className="absolute inset-x-0 bottom-0 border-b border-white/10" />
                     </div>
                 </div>
 
-                <div className="glass-panel p-6 rounded-2xl border border-white/10">
-                    <h3 className="text-lg font-medium text-white mb-4">Próximas Citas</h3>
-                    <div className="space-y-4">
-                        {[1, 2, 3].map((i) => (
-                            <div key={i} className="flex items-center gap-4 p-3 rounded-xl bg-black/50 border border-white/5">
-                                <div className="w-10 h-10 rounded-full bg-zinc-800 flex items-center justify-center text-[#d4af37] font-medium">
-                                    CA
+                {/* Próximas Citas */}
+                <div className="bg-[#111111] p-6 rounded-2xl border border-white/5 shadow-sm flex flex-col">
+                    <div className="flex items-center justify-between mb-6">
+                        <h3 className="text-lg font-bold text-white">Próximas Citas</h3>
+                        <Link href="/dashboard/appointments" className="text-xs font-bold text-[#C9A84C] hover:text-[#b5953e] transition-colors">Ver todas</Link>
+                    </div>
+                    <div className="space-y-3 flex-1">
+                        {[
+                            { client: 'Carlos A.', service: 'Corte + Barba', time: '11:00 AM', barber: 'Marcos G.' },
+                            { client: 'Luis M.', service: 'Mid Fade', time: '11:45 AM', barber: 'Juan P.' },
+                            { client: 'Diego R.', service: 'Corte Premium', time: '12:30 PM', barber: 'Marcos G.' },
+                            { client: 'Andrés V.', service: 'Taper Fade', time: '01:00 PM', barber: 'Marcos G.' },
+                        ].map((cita, i) => (
+                            <div key={i} className="flex items-center gap-4 p-3 rounded-xl bg-[#0A0A0A] border border-white/5 hover:border-[#C9A84C]/20 transition-all group">
+                                <div className="w-10 h-10 rounded-xl bg-[#111111] border border-white/5 flex items-center justify-center text-[#C9A84C] font-extrabold text-sm">
+                                    {cita.client.substring(0, 2).toUpperCase()}
                                 </div>
-                                <div className="flex-1">
-                                    <p className="text-sm font-medium text-white">Carlos Andrade</p>
-                                    <p className="text-xs text-zinc-500">Corte Clásico + Barba</p>
+                                <div className="flex-1 min-w-0">
+                                    <p className="text-sm font-bold text-white truncate">{cita.client}</p>
+                                    <p className="text-xs text-zinc-500 truncate">{cita.service}</p>
                                 </div>
-                                <div className="text-right">
-                                    <p className="text-sm font-medium text-[#d4af37]">11:00 AM</p>
-                                    <p className="text-xs text-zinc-500">Marcos G.</p>
+                                <div className="text-right flex-shrink-0">
+                                    <p className="text-xs font-bold text-[#C9A84C]">{cita.time}</p>
+                                    <p className="text-[10px] text-zinc-500 uppercase tracking-wider">{cita.barber}</p>
                                 </div>
+                                <ChevronRight className="w-4 h-4 text-zinc-600 group-hover:text-[#C9A84C] transition-colors hidden sm:block" />
                             </div>
                         ))}
                     </div>

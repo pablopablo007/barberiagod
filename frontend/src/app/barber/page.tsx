@@ -12,9 +12,9 @@ const mockAppointments = [
 ];
 
 const statusStyles: Record<string, string> = {
-    CONFIRMED: 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20',
-    PENDING: 'bg-amber-500/10 text-amber-400 border border-amber-500/20',
-    COMPLETED: 'bg-zinc-700/50 text-zinc-400',
+    CONFIRMED: 'bg-[#C9A84C]/10 text-[#C9A84C] border border-[#C9A84C]/20',
+    PENDING: 'bg-[#111111] text-zinc-400 border border-white/10',
+    COMPLETED: 'bg-zinc-800/50 text-zinc-500',
     CANCELLED: 'bg-rose-500/10 text-rose-400',
 };
 
@@ -37,43 +37,47 @@ export default function BarberPage() {
     const today = new Date().toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 
     return (
-        <div className="space-y-8 animate-fade-in">
+        <div className="space-y-8 animate-fade-in pb-10">
             <div>
-                <h1 className="text-3xl font-bold text-white tracking-tight">Mi Agenda</h1>
-                <p className="text-sm text-zinc-400 mt-1 capitalize">{today}</p>
+                <h1 className="text-3xl font-extrabold text-white tracking-tight">Mi Agenda</h1>
+                <p className="text-sm text-zinc-500 mt-1 capitalize font-medium">{today}</p>
             </div>
 
             {/* Stats del día */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                 {[
-                    { label: 'Citas hoy', value: mockAppointments.length, color: 'text-[#d4af37]' },
-                    { label: 'Confirmadas', value: mockAppointments.filter(a => a.status === 'CONFIRMED').length, color: 'text-emerald-400' },
-                    { label: 'Pendientes', value: mockAppointments.filter(a => a.status === 'PENDING').length, color: 'text-amber-400' },
-                    { label: 'Horas trabajadas', value: '6h 30m', color: 'text-blue-400' },
+                    { label: 'Citas Hoy', value: mockAppointments.length, color: 'text-white' },
+                    { label: 'Confirmadas', value: mockAppointments.filter(a => a.status === 'CONFIRMED').length, color: 'text-[#C9A84C]' },
+                    { label: 'Pendientes', value: mockAppointments.filter(a => a.status === 'PENDING').length, color: 'text-zinc-400' },
+                    { label: 'Horas Trabajadas', value: '6h 30m', color: 'text-white' },
                 ].map(stat => (
-                    <div key={stat.label} className="glass-panel p-4 rounded-xl border border-white/5">
-                        <p className="text-xs text-zinc-500">{stat.label}</p>
-                        <p className={`text-2xl font-bold mt-1 ${stat.color}`}>{stat.value}</p>
+                    <div key={stat.label} className="bg-[#111111] p-5 rounded-2xl border border-white/5 shadow-sm relative overflow-hidden group hover:border-[#C9A84C]/30 transition-all">
+                        <div className="absolute -right-4 -top-4 w-16 h-16 bg-[#C9A84C]/5 rounded-full blur-xl group-hover:bg-[#C9A84C]/10 transition-colors" />
+                        <p className="text-xs font-bold text-zinc-500 uppercase tracking-wider relative z-10">{stat.label}</p>
+                        <p className={`text-3xl font-extrabold mt-2 relative z-10 ${stat.color}`}>{stat.value}</p>
                     </div>
                 ))}
             </div>
 
             {/* Lista de citas */}
             <div>
-                <h2 className="text-lg font-semibold text-white mb-4">Citas del día</h2>
-                <div className="space-y-3">
+                <h2 className="text-xl font-bold text-white mb-6">Próximos Turnos</h2>
+                <div className="space-y-4">
                     {mockAppointments.map(a => (
-                        <div key={a.id} className="glass-panel p-4 rounded-xl border border-white/5 flex items-center gap-4 hover:bg-[#1a1a1a] transition-colors">
-                            <div className="w-14 text-center">
-                                <p className="text-[#d4af37] font-bold text-sm">{a.time}</p>
-                                <p className="text-zinc-600 text-xs">{a.duration}min</p>
+                        <div key={a.id} className="bg-[#111111] p-5 rounded-2xl border border-white/5 flex items-center gap-6 hover:border-[#C9A84C]/30 transition-all shadow-sm group">
+                            <div className="w-16 text-center flex-shrink-0">
+                                <p className="text-[#C9A84C] font-extrabold text-lg">{a.time}</p>
+                                <p className="text-zinc-500 text-xs font-bold uppercase tracking-wider">{a.duration} min</p>
                             </div>
-                            <div className="w-px h-10 bg-white/10" />
-                            <div className="flex-1">
-                                <p className="text-white font-medium text-sm">{a.client}</p>
-                                <p className="text-zinc-500 text-xs mt-0.5">{a.service}</p>
+
+                            <div className="w-px h-12 bg-white/5" />
+
+                            <div className="flex-1 min-w-0">
+                                <p className="text-white font-bold text-base truncate">{a.client}</p>
+                                <p className="text-zinc-500 text-sm mt-0.5 truncate">{a.service}</p>
                             </div>
-                            <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${statusStyles[a.status]}`}>
+
+                            <span className={`flex-shrink-0 text-xs font-bold px-3 py-1.5 rounded-lg uppercase tracking-wider ${statusStyles[a.status]}`}>
                                 {statusLabels[a.status]}
                             </span>
                         </div>
