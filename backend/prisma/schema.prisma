@@ -1,0 +1,205 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  OWNER
+  BARBER
+  CLIENT
+}
+
+enum AppointmentStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  REFUNDED
+}
+
+enum PaymentMethod {
+  CASH
+  CARD
+  TRANSFER
+}
+
+enum Plan {
+  FREE
+  PRO
+  ENTERPRISE
+}
+
+model Tenant {
+  id          String   @id @default(uuid())
+  name        String
+  slug        String   @unique
+  logoUrl     String?
+  address     String?
+  phone       String?
+  plan        Plan     @default(FREE)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  users        User[]
+  services     Service[]
+  barbers      Barber[]
+  appointments Appointment[]
+  inventories  Inventory[]
+  promotions   Promotion[]
+}
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String
+  role         Role     @default(CLIENT)
+  name         String
+  phone        String?
+  avatarUrl    String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  tenantId String
+  tenant   Tenant @relation(fields: [tenantId], references: [id])
+
+  barberProfile Barber?
+  appointments  Appointment[] @relation("ClientAppointments")
+  reviews       Review[]
+  refreshTokens RefreshToken[]
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
+model Service {
+  id              String   @id @default(uuid())
+  name            String
+  description     String?
+  price           Float
+  durationMinutes Int
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  tenantId     String
+  tenant       Tenant        @relation(fields: [tenantId], references: [id])
+  appointments Appointment[]
+}
+
+model Barber {
+  id        String   @id @default(uuid())
+  bio       String?
+  schedule  Json?    // { mon: [{start: "09:00", end:"18:00"}], ... }
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userId   String @unique
+  user     User   @relation(fields: [userId], references: [id])
+  tenantId String
+  tenant   Tenant @relation(fields: [tenantId], references: [id])
+
+  appointments Appointment[]
+  photos       BarberPhoto[]
+}
+
+model Appointment {
+  id        String            @id @default(uuid())
+  startAt   DateTime
+  endAt     DateTime
+  status    AppointmentStatus @default(PENDING)
+  notes     String?
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+
+  tenantId  String
+  tenant    Tenant  @relation(fields: [tenantId], references: [id])
+  clientId  String
+  client    User    @relation("ClientAppointments", fields: [clientId], references: [id])
+  barberId  String
+  barber    Barber  @relation(fields: [barberId], references: [id])
+  serviceId String
+  service   Service @relation(fields: [serviceId], references: [id])
+
+  payment Payment?
+  review  Review?
+}
+
+model Payment {
+  id                    String        @id @default(uuid())
+  amount                Float
+  currency              String        @default("USD")
+  method                PaymentMethod @default(CASH)
+  status                PaymentStatus @default(PENDING)
+  stripePaymentIntentId String?
+  createdAt             DateTime      @default(now())
+  updatedAt             DateTime      @updatedAt
+
+  appointmentId String      @unique
+  appointment   Appointment @relation(fields: [appointmentId], references: [id])
+}
+
+model Review {
+  id        String   @id @default(uuid())
+  rating    Int      // 1-5
+  comment   String?
+  createdAt DateTime @default(now())
+
+  appointmentId String      @unique
+  appointment   Appointment @relation(fields: [appointmentId], references: [id])
+  clientId      String
+  client        User        @relation(fields: [clientId], references: [id])
+}
+
+model Inventory {
+  id           String   @id @default(uuid())
+  name         String
+  quantity     Int      @default(0)
+  price        Float
+  minThreshold Int      @default(5)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  tenantId String
+  tenant   Tenant @relation(fields: [tenantId], references: [id])
+}
+
+model Promotion {
+  id              String   @id @default(uuid())
+  code            String
+  discountPercent Float
+  validUntil      DateTime
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  tenantId String
+  tenant   Tenant @relation(fields: [tenantId], references: [id])
+}
+
+model BarberPhoto {
+  id        String   @id @default(uuid())
+  imageUrl  String
+  caption   String?
+  createdAt DateTime @default(now())
+
+  barberId String
+  barber   Barber @relation(fields: [barberId], references: [id])
+}
